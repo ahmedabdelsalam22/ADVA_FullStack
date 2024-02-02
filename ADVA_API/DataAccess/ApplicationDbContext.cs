@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ADVA_API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ADVA_API.DataAccess
 {
@@ -6,6 +7,28 @@ namespace ADVA_API.DataAccess
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+        }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Department)
+                .WithMany(d => d.Employees)
+                .HasForeignKey(e => e.DepartmentID);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Manager)
+                .WithMany()
+                .HasForeignKey(e => e.ManagerID);
+
+            modelBuilder.Entity<Department>()
+                .HasOne(d => d.Manager)
+                .WithMany()
+                .HasForeignKey(d => d.Id)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
