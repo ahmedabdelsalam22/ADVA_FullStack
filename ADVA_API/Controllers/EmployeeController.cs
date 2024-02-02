@@ -1,4 +1,5 @@
 ﻿using ADVA_API.Models;
+using ADVA_API.Models.DTOS;
 using ADVA_API.RepositoryPattern.Unit_Of_Work;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -38,9 +39,11 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
+                List<EmployeeDto> employeeDtos = _mapper.Map<List<EmployeeDto>>(employees);
+
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = employees;
+                _ApiResposne.Result = employeeDtos;
                 return _ApiResposne;
             }
             catch (Exception ex) 
@@ -75,9 +78,11 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
+                EmployeeDto employeeDto = _mapper.Map<EmployeeDto>(employee);
+
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = employee;
+                _ApiResposne.Result = employeeDto;
                 return _ApiResposne;
             }
             catch (Exception ex)
@@ -92,11 +97,11 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> CreateEmployee([FromBody] Employee employeeToCreate)
+        public async Task<ActionResult<APIResponse>> CreateEmployee([FromBody] EmployeeCreateDto employeeCreateDto)
         {
             try
             {
-                if (employeeToCreate == null)
+                if (employeeCreateDto == null)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
@@ -105,8 +110,9 @@ namespace ADVA_API.Controllers
                 }
 
                 // we must sure that related entities is exists in database 
-                Department department = await _unitOfWork.departmentRepository.Get(filter: x => x.Name.ToLower() == employeeToCreate.Department.Name.ToLower());
-                Employee manager = await _unitOfWork.employeeRepository.Get(filter: x => x.Name.ToLower() == employeeToCreate.Manager.Name.ToLower());
+                Department department = await _unitOfWork.departmentRepository.Get(filter: x => x.Id == employeeCreateDto.DepartmentID);
+                
+                Employee manager = await _unitOfWork.employeeRepository.Get(filter: x => x.Id == employeeCreateDto.ManagerID);
 
                 if (department == null && manager == null)
                 {
@@ -116,10 +122,12 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
-                employeeToCreate.Department = department!;
-                employeeToCreate.Manager = manager;
+                employeeCreateDto.Department = department!;
+                employeeCreateDto.Manager = manager;
 
-                await _unitOfWork.employeeRepository.Create(employeeToCreate);
+                Employee employeeToDb = _mapper.Map<Employee>(employeeCreateDto);
+
+                await _unitOfWork.employeeRepository.Create(employeeToDb);
 
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
@@ -138,19 +146,19 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] Employee employeeToUpdate , int employeeId)
+        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] EmployeeDto employeeDto , int employeeId)
         {
             try
             {
                 
-                if (employeeToUpdate == null)
+                if (employeeDto == null)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
                     _ApiResposne.ErrorMessages = new List<string>() { "employee must't be null" };
                     return _ApiResposne;
                 }
-                if (employeeId != employeeToUpdate.Id)
+                if (employeeId != employeeDto.Id)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
@@ -167,8 +175,9 @@ namespace ADVA_API.Controllers
                 }
 
                 // we must sure that related entities is exists in database 
-                Department department = await _unitOfWork.departmentRepository.Get(filter: x => x.Name.ToLower() == employeeToUpdate.Department.Name.ToLower());
-                Employee manager = await _unitOfWork.employeeRepository.Get(filter: x => x.Name.ToLower() == employeeToUpdate.Manager.Name.ToLower());
+                Department department = await _unitOfWork.departmentRepository.Get(filter: x => x.Id == employeeDto.DepartmentID);
+
+                Employee manager = await _unitOfWork.employeeRepository.Get(filter: x => x.Id == employeeDto.ManagerID);
 
                 if (department == null && manager == null)
                 {
@@ -178,10 +187,13 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
-                employeeToUpdate.Department = department!;
-                employeeToUpdate.Manager = manager;
+                employeeDto.Department = department!;
+                employeeDto.Manager = manager;
 
-                await _unitOfWork.employeeRepository.Update(employeeToUpdate);
+
+                Employee employeeToDb = _mapper.Map<Employee>(employeeDto);
+
+                await _unitOfWork.employeeRepository.Update(employeeToDb);
 
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
