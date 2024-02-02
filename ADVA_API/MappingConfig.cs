@@ -12,7 +12,10 @@ namespace ADVA_API
             CreateMap<Department, DepartmentDto>().ReverseMap();
 
             CreateMap<Employee,EmployeeDto>().ReverseMap();
-            CreateMap<EmployeeCreateDto,Employee>();
+            CreateMap<EmployeeUpdateDto, Employee>();
+            CreateMap<EmployeeCreateDto, Employee>();
+
+
         }
     }
 }
