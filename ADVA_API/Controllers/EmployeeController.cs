@@ -162,6 +162,7 @@ namespace ADVA_API.Controllers
         [HttpDelete("employee/delete/{employeeId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteEmployee(int? employeeId) 
         {
             try
