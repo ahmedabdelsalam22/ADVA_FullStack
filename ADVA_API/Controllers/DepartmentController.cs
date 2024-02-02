@@ -40,7 +40,6 @@ namespace ADVA_API.Controllers
                 }
 
                 List<DepartmentDto> departmentDtos = _mapper.Map<List<DepartmentDto>>(departments);
-                
 
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
@@ -80,9 +79,12 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
+                DepartmentDto departmentDto = _mapper.Map<DepartmentDto>(department);
+
+
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = department;
+                _ApiResposne.Result = departmentDto;
                 return _ApiResposne;
             }
             catch (Exception ex)
@@ -98,11 +100,11 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> CreateDepartment([FromBody] Department departmentToCreate)
+        public async Task<ActionResult<APIResponse>> CreateDepartment([FromBody] DepartmentCreateDto departmentCreateDto)
         {
             try
             {
-                if (departmentToCreate == null)
+                if (departmentCreateDto == null)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
@@ -110,7 +112,9 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
-                await _unitOfWork.departmentRepository.Create(departmentToCreate);
+                Department department = _mapper.Map<Department>(departmentCreateDto);
+
+                await _unitOfWork.departmentRepository.Create(department);
 
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
@@ -130,19 +134,19 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] Department departmentToUpdate, int departmentId)
+        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] DepartmentDto departmentDto, int departmentId)
         {
             try
             {
 
-                if (departmentToUpdate == null)
+                if (departmentDto == null)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
                     _ApiResposne.ErrorMessages = new List<string>() { "department must't be null" };
                     return _ApiResposne;
                 }
-                if (departmentId != departmentToUpdate.Id)
+                if (departmentId != departmentDto.Id)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
@@ -150,7 +154,9 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
-                await _unitOfWork.departmentRepository.Update(departmentToUpdate);
+                Department departmentToDb = _mapper.Map<Department>(departmentDto);
+
+                await _unitOfWork.departmentRepository.Update(departmentToDb);
 
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
