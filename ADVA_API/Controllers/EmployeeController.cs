@@ -25,6 +25,7 @@ namespace ADVA_API.Controllers
         [HttpGet("employees")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<APIResponse>> GetEmployees()
         {
             try
@@ -34,7 +35,7 @@ namespace ADVA_API.Controllers
                 if (employees == null)
                 {
                     _ApiResposne.IsSuccess = true;
-                    _ApiResposne.StatusCode = HttpStatusCode.OK;
+                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
                     _ApiResposne.Result = new List<Employee>() { };
                     return _ApiResposne;
                 }
@@ -52,6 +53,44 @@ namespace ADVA_API.Controllers
                 return _ApiResposne;
             }
         }
+        [HttpGet("employees/{employeeId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<APIResponse>> GetEmployeeById(int? employeeId) 
+        {
+            try
+            {
+                if (employeeId == 0 || employeeId == null)
+                {
+                    _ApiResposne.IsSuccess = false;
+                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
+                    _ApiResposne.Result = null;
+                    _ApiResposne.ErrorMessages = new List<string>() { "employeeId must't be 0 or null" };
+                    return _ApiResposne;
+                }
+                Employee employee = await _unitOfWork.employeeRepository.Get(filter:x=>x.Id == employeeId ,tracked: false,
+                                   includes: new string[] { "Department", "Manager" });
+                if (employee == null)
+                {
+                    _ApiResposne.IsSuccess = true;
+                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
+                    _ApiResposne.Result = null;
+                    return _ApiResposne;
+                }
 
+                _ApiResposne.IsSuccess = true;
+                _ApiResposne.StatusCode = HttpStatusCode.OK;
+                _ApiResposne.Result = employee;
+                return _ApiResposne;
+            }
+            catch (Exception ex)
+            {
+                _ApiResposne.IsSuccess = false;
+                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
+                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
+                return _ApiResposne;
+            }
+        }
     }
 }
