@@ -146,7 +146,7 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] EmployeeDto employeeDto , int employeeId)
+        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] EmployeeUpdateDto employeeDto , int employeeId)
         {
             try
             {
