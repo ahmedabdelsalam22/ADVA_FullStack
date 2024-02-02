@@ -195,5 +195,40 @@ namespace ADVA_API.Controllers
             }
 
         }
+
+        [HttpDelete("department/delete/{departmentId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<APIResponse>> DeleteDepartment(int? departmentId)
+        {
+            try
+            {
+                if (departmentId == 0 || departmentId == null)
+                {
+                    _ApiResposne.IsSuccess = true;
+                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
+                    _ApiResposne.ErrorMessages = new List<string>() { "department Id must't be 0 or null" };
+                    return _ApiResposne;
+                }
+                Department departmentToDelete = await _unitOfWork.departmentRepository.Get(filter: x => x.Id == departmentId, tracked: false);
+                if (departmentToDelete == null)
+                {
+                    _ApiResposne.IsSuccess = true;
+                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
+                    return _ApiResposne;
+                }
+                await _unitOfWork.departmentRepository.Delete(departmentToDelete);
+                _ApiResposne.IsSuccess = true;
+                _ApiResposne.StatusCode = HttpStatusCode.OK;
+                return _ApiResposne;
+            }
+            catch (Exception ex)
+            {
+                _ApiResposne.IsSuccess = false;
+                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
+                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
+                return _ApiResposne;
+            }
+        }
     }
 }
