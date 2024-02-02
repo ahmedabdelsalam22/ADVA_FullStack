@@ -1,3 +1,4 @@
+using ADVA_API;
 using ADVA_API.DataAccess;
 using ADVA_API.RepositoryPattern.IRepositories;
 using ADVA_API.RepositoryPattern.Repositories;
@@ -20,6 +21,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 var app = builder.Build();
 
