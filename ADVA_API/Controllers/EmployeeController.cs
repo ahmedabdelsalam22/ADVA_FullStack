@@ -148,7 +148,7 @@ namespace ADVA_API.Controllers
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                    _ApiResposne.ErrorMessages = new List<string>() { "employee must't null" };
+                    _ApiResposne.ErrorMessages = new List<string>() { "employee must't be null" };
                     return _ApiResposne;
                 }
                 if (employeeId != employeeToUpdate.Id)
@@ -159,7 +159,7 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
                 Employee employeeFromDb = await _unitOfWork.employeeRepository.Get(filter: x => x.Id == employeeId, tracked: false);
-                if (employeeToUpdate == null)
+                if (employeeFromDb == null)
                 {
                     _ApiResposne.IsSuccess = false;
                     _ApiResposne.StatusCode = HttpStatusCode.NotFound;
