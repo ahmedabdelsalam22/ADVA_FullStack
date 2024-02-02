@@ -14,19 +14,17 @@ namespace ADVA_API.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly APIResponse _ApiResposne;
         public DepartmentController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _ApiResposne = new APIResponse();
         }
 
         [HttpGet("departments")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<APIResponse>> GetDepartments()
+        public async Task<ActionResult> GetDepartments()
         {
             try
             {
@@ -34,24 +32,16 @@ namespace ADVA_API.Controllers
                                includes: new string[] { "Employees" });
                 if (departments == null)
                 {
-                    _ApiResposne.IsSuccess = true;
-                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
-                    return _ApiResposne;
+                    return NotFound();
                 }
 
                 List<DepartmentDto> departmentDtos = _mapper.Map<List<DepartmentDto>>(departments);
 
-                _ApiResposne.IsSuccess = true;
-                _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = departmentDtos;
-                return _ApiResposne;
+                return Ok(departmentDtos);
             }
             catch (Exception ex)
             {
-                _ApiResposne.IsSuccess = false;
-                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
-                return _ApiResposne;
+                return BadRequest(ex.Message.ToString());
             }
         }
 
@@ -59,73 +49,52 @@ namespace ADVA_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<APIResponse>> GetDepartmentById(int? departmentId)
+        public async Task<ActionResult> GetDepartmentById(int? departmentId)
         {
             try
             {
                 if (departmentId == 0 || departmentId == null)
                 {
-                    _ApiResposne.IsSuccess = false;
-                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
-                    _ApiResposne.ErrorMessages = new List<string>() { "department Id must't be 0 or null" };
-                    return _ApiResposne;
+                    return BadRequest("department Id must't be 0 or null");
                 }
                 Department department = await _unitOfWork.departmentRepository.Get(filter: x => x.Id == departmentId, tracked: false,
                                    includes: new string[] { "Employees" });
                 if (department == null)
                 {
-                    _ApiResposne.IsSuccess = true;
-                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
-                    return _ApiResposne;
+                    return NotFound("no department exists with this id");
                 }
 
                 DepartmentDto departmentDto = _mapper.Map<DepartmentDto>(department);
 
-
-                _ApiResposne.IsSuccess = true;
-                _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = departmentDto;
-                return _ApiResposne;
+                return Ok(departmentDto);
             }
             catch (Exception ex)
             {
-                _ApiResposne.IsSuccess = false;
-                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
-                return _ApiResposne;
+                return BadRequest(ex.Message.ToString());
             }
         }
 
         [HttpPost("department/create")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> CreateDepartment([FromBody] DepartmentCreateDto departmentCreateDto)
+        public async Task<ActionResult> CreateDepartment([FromBody] DepartmentCreateDto departmentCreateDto)
         {
             try
             {
                 if (departmentCreateDto == null)
                 {
-                    _ApiResposne.IsSuccess = false;
-                    _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                    _ApiResposne.ErrorMessages = new List<string>() { "department must't null" };
-                    return _ApiResposne;
+                    return BadRequest("invalid model");
                 }
 
                 Department department = _mapper.Map<Department>(departmentCreateDto);
 
                 await _unitOfWork.departmentRepository.Create(department);
 
-                _ApiResposne.IsSuccess = true;
-                _ApiResposne.StatusCode = HttpStatusCode.OK;
-                return _ApiResposne;
+                return Created();
             }
             catch (Exception ex)
             {
-                _ApiResposne.IsSuccess = false;
-                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
-                return _ApiResposne;
+                return BadRequest(ex.Message.ToString());
             }
 
         }
@@ -133,41 +102,29 @@ namespace ADVA_API.Controllers
         [HttpPut("department/update/{departmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<APIResponse>> UpdateEmployee([FromBody] DepartmentDto departmentDto, int departmentId)
+        public async Task<ActionResult> UpdateEmployee([FromBody] DepartmentDto departmentDto, int departmentId)
         {
             try
             {
 
                 if (departmentDto == null)
                 {
-                    _ApiResposne.IsSuccess = false;
-                    _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                    _ApiResposne.ErrorMessages = new List<string>() { "department must't be null" };
-                    return _ApiResposne;
+                    return BadRequest("invalid model");
                 }
                 if (departmentId != departmentDto.Id)
                 {
-                    _ApiResposne.IsSuccess = false;
-                    _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                    _ApiResposne.ErrorMessages = new List<string>() { "department Id must be tha same of department which need to Update" };
-                    return _ApiResposne;
+                    return BadRequest("department Id must be tha same of department which need to Update");
                 }
 
                 Department departmentToDb = _mapper.Map<Department>(departmentDto);
 
                 await _unitOfWork.departmentRepository.Update(departmentToDb);
 
-                _ApiResposne.IsSuccess = true;
-                _ApiResposne.StatusCode = HttpStatusCode.OK;
-                return _ApiResposne;
+                return Ok("department updated successfully");
             }
             catch (Exception ex)
             {
-                _ApiResposne.IsSuccess = false;
-                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
-                return _ApiResposne;
+                return BadRequest(ex.Message.ToString());
             }
 
         }
@@ -175,35 +132,27 @@ namespace ADVA_API.Controllers
         [HttpDelete("department/delete/{departmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<APIResponse>> DeleteDepartment(int? departmentId)
         {
             try
             {
                 if (departmentId == 0 || departmentId == null)
                 {
-                    _ApiResposne.IsSuccess = true;
-                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
-                    _ApiResposne.ErrorMessages = new List<string>() { "department Id must't be 0 or null" };
-                    return _ApiResposne;
+                    return BadRequest("department Id must't be 0 or null");
                 }
                 Department departmentToDelete = await _unitOfWork.departmentRepository.Get(filter: x => x.Id == departmentId, tracked: false);
                 if (departmentToDelete == null)
                 {
-                    _ApiResposne.IsSuccess = true;
-                    _ApiResposne.StatusCode = HttpStatusCode.NotFound;
-                    return _ApiResposne;
+                    return NotFound();
                 }
                 await _unitOfWork.departmentRepository.Delete(departmentToDelete);
-                _ApiResposne.IsSuccess = true;
-                _ApiResposne.StatusCode = HttpStatusCode.OK;
-                return _ApiResposne;
+
+                return Ok("department deleted successfully");
             }
             catch (Exception ex)
             {
-                _ApiResposne.IsSuccess = false;
-                _ApiResposne.StatusCode = HttpStatusCode.BadRequest;
-                _ApiResposne.ErrorMessages = new List<string>() { ex.ToString() };
-                return _ApiResposne;
+                return BadRequest(ex.Message.ToString());
             }
         }
     }
