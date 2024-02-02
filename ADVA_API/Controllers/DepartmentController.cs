@@ -1,4 +1,5 @@
 ﻿using ADVA_API.Models;
+using ADVA_API.Models.DTOS;
 using ADVA_API.RepositoryPattern.Unit_Of_Work;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -38,9 +39,12 @@ namespace ADVA_API.Controllers
                     return _ApiResposne;
                 }
 
+                List<DepartmentDto> departmentDtos = _mapper.Map<List<DepartmentDto>>(departments);
+                
+
                 _ApiResposne.IsSuccess = true;
                 _ApiResposne.StatusCode = HttpStatusCode.OK;
-                _ApiResposne.Result = departments;
+                _ApiResposne.Result = departmentDtos;
                 return _ApiResposne;
             }
             catch (Exception ex)

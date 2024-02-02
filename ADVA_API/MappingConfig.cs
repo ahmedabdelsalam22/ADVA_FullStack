@@ -9,6 +9,7 @@ namespace ADVA_API
         public MappingConfig()
         {
             CreateMap<DepartmentCreateDto, Department>();
+            CreateMap<Department, DepartmentDto>();
         }
     }
 }
