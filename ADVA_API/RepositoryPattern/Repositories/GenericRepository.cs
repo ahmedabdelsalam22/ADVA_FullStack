@@ -26,7 +26,7 @@ namespace ADVA_API.RepositoryPattern.Repositories
             await _context.SaveChangesAsync();
 
         }
-        public Task<T> Get(Expression<Func<T, bool>>? filter = null, bool tracked = true, String? includeProperties = null)
+        public Task<T> Get(Expression<Func<T, bool>>? filter = null, bool tracked = true, string[]? includes = null)
         {
             IQueryable<T> query = _dbSet;
             if (filter != null)
@@ -37,16 +37,16 @@ namespace ADVA_API.RepositoryPattern.Repositories
             {
                 query = query.AsNoTracking();
             }
-            if (includeProperties != null)
+            if (includes != null)
             {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var include in includes)
                 {
-                    query = query.Include(includeProp);
+                    query = query.Include(include);
                 }
             }
             return query.FirstOrDefaultAsync();
         }
-        public Task<List<T>> GetAll(Expression<Func<T, bool>>? filter = null, bool tracked = true, String? includeProperties = null)
+        public Task<List<T>> GetAll(Expression<Func<T, bool>>? filter = null, bool tracked = true, string[]? includes = null)
         {
             IQueryable<T> query = _dbSet;
             if (filter != null)
@@ -57,11 +57,11 @@ namespace ADVA_API.RepositoryPattern.Repositories
             {
                 query = query.AsNoTracking();
             }
-            if (includeProperties != null)
+            if (includes != null)
             {
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var include in includes)
                 {
-                    query = query.Include(includeProp);
+                    query = query.Include(include);
                 }
             }
             return query.ToListAsync();
