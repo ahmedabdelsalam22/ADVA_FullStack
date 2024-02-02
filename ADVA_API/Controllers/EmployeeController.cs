@@ -134,8 +134,7 @@ namespace ADVA_API.Controllers
             }
 
         }
-
-        [HttpPost("employee/update/{employeeId}")]
+        [HttpPut("employee/update/{employeeId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -197,7 +196,6 @@ namespace ADVA_API.Controllers
             }
 
         }
-
         [HttpDelete("employee/delete/{employeeId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

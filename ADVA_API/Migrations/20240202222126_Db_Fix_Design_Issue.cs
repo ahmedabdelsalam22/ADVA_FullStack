@@ -5,7 +5,7 @@
 namespace ADVA_API.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseEntitiesDesign : Migration
+    public partial class Db_Fix_Design_Issue : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,7 +14,8 @@ namespace ADVA_API.Migrations
                 name: "Departments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -58,22 +59,11 @@ namespace ADVA_API.Migrations
                 name: "IX_Employees_ManagerID",
                 table: "Employees",
                 column: "ManagerID");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Departments_Employees_Id",
-                table: "Departments",
-                column: "Id",
-                principalTable: "Employees",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Departments_Employees_Id",
-                table: "Departments");
-
             migrationBuilder.DropTable(
                 name: "Employees");
 

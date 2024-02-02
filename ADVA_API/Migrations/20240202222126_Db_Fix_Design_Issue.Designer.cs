@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ADVA_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240202123537_DatabaseEntitiesDesign")]
-    partial class DatabaseEntitiesDesign
+    [Migration("20240202222126_Db_Fix_Design_Issue")]
+    partial class Db_Fix_Design_Issue
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,7 +28,10 @@ namespace ADVA_API.Migrations
             modelBuilder.Entity("ADVA_API.Models.Department", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -67,17 +70,6 @@ namespace ADVA_API.Migrations
                     b.HasIndex("ManagerID");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("ADVA_API.Models.Department", b =>
-                {
-                    b.HasOne("ADVA_API.Models.Employee", "Manager")
-                        .WithMany()
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("ADVA_API.Models.Employee", b =>
