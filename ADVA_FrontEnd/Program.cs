@@ -1,4 +1,6 @@
-using ADVA_FrontEnd;
+using ADVA_FrontEnd.Services;
+using ADVA_FrontEnd.Services.IServices;
+using ADVA_FrontEnd.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,11 @@ builder.Services.AddControllersWithViews();
 
 
 SD.Adva_BaseUrl = builder.Configuration["ServiceUrls:ADVA_URL"]!;
+
+builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
 var app = builder.Build();
 
