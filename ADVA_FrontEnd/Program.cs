@@ -1,7 +1,12 @@
+using ADVA_FrontEnd;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+SD.Adva_BaseUrl = builder.Configuration["ServiceUrls:ADVA_URL"]!;
 
 var app = builder.Build();
 
