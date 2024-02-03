@@ -1,0 +1,36 @@
+﻿@using ADVA_FrontEnd.Models.DTOS;
+@model EmployeeCreateDto
+<h1>Create Product</h1>
+
+
+<form method="post">
+    <div class="m-1">
+        <label asp-for="Name"></label>
+        <input type="text" asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="m-1">
+        <label asp-for="Salary"></label>
+        <input type="number" asp-for="Salary" class="form-control" />
+        <span asp-validation-for="Salary" class="text-danger"></span>
+    </div>
+    <div class="m-1">
+        <label asp-for="DepartmentID"></label>
+        <input type="number" asp-for="DepartmentID" class="form-control" />
+        <span asp-validation-for="DepartmentID" class="text-danger"></span>
+    </div>
+    <div class="m-1">
+        <label asp-for="ManagerID"></label>
+        <input type="text" asp-for="ManagerID" class="form-control" />
+        <span asp-validation-for="ManagerID" class="text-danger"></span>
+    </div>
+    <div class="m-3">
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+
+@section Scripts
+    {
+    <Partial name="_ValidationScriptsPartial" />
+}

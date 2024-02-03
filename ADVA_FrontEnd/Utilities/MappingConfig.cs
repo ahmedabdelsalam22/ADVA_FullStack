@@ -9,6 +9,11 @@ namespace ADVA_FrontEnd.Utilities
        public MappingConfig() 
        {
             CreateMap<Employee , EmployeeDto>();
-       }
+            CreateMap<EmployeeCreateDto, Employee>();
+            CreateMap<EmployeeUpdateDto, Employee>().ReverseMap();
+
+            CreateMap<Department, DepartmentDto>().ReverseMap();
+            CreateMap<DepartmentCreateDto, Department>();
+        }
     }
 }
