@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ADVA_API.Models.DTOS
+namespace ADVA_FrontEnd.Models.DTOS
 {
     public class DepartmentDto
     {

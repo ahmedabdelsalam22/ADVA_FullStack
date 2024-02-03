@@ -1,4 +1,4 @@
-﻿namespace ADVA_FrontEnd
+﻿namespace ADVA_FrontEnd.Utilities
 {
     public class SD
     {
