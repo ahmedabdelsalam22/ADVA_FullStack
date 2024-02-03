@@ -1,0 +1,18 @@
+﻿@using ADVA_FrontEnd.Models.DTOS;
+@model DepartmentDto
+<h1>Create Department</h1>
+
+
+<form method="post">
+    <div class="m-1">
+        <label asp-for="Name"></label>
+        <input type="text" asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+</form>
+
+
+@section Scripts
+    {
+    <Partial name="_ValidationScriptsPartial" />
+    }
